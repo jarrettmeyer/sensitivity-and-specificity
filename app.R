@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 
 ui <- shinyUI(fluidPage(
@@ -19,7 +20,8 @@ ui <- shinyUI(fluidPage(
       tableOutput('table'),
       textOutput('accuracy'),
       textOutput('posPredictionValue'),
-      textOutput('negPredictionValue')
+      textOutput('negPredictionValue'),
+      plotOutput('plot')
     )
   )
 ))
@@ -66,10 +68,24 @@ server <- shinyServer(function(input, output) {
     paste0("Negative Prediction Value: ", round(npv, 2), "%")
   })
   
+  getPlot <- reactive({
+    stats <- getStats()
+    s1 <- input$sensitivity / 100
+    s2 <- input$specificity / 100
+    df <- data.frame(sensitivity = c(s1), specificity = c(s2))
+    ggplot(df, aes(x = specificity, y = sensitivity)) +
+      geom_point(color = "#f90000", size = 3) +
+      geom_segment(aes(x = x, y = y, xend = s2, yend = s1), data.frame(x = c(0, s2), y = c(s1, 0)), color = "#f90000") +
+      geom_segment(aes(x = x, y = y, xend = y, yend = x), data.frame(x = c(0, 1), y = c(1, 0)), color = "#606060") +
+      scale_x_continuous(limits = c(0, 1)) + 
+      scale_y_continuous(limits = c(0, 1))
+  })
+  
   output$table <- renderTable(getStatsDf(), rownames = TRUE)
   output$accuracy <- renderText(getAccuracy())
   output$posPredictionValue <- renderText(getPosPredictionValue())
   output$negPredictionValue <- renderText(getNegPredictionValue())
+  output$plot <- renderPlot(getPlot())
 })
 
 
