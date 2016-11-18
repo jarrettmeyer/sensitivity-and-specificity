@@ -17,10 +17,15 @@ ui <- shinyUI(fluidPage(
     ),
       
     mainPanel(
+      p('Sensitivity is a test\'s ability to detect positive case. Specificity is a test\'s ability to detect a negative case.'),
+      p('From these two values, we can determine a test\'s positive predictive and negative predictive value. That is, given a positive or negative result, what is the probability that the result represents truth.'),
+      p('Enter values for senstivity, specificity, prevalence, and population. These will change the reported accuracy, positive predictive value, and negative predictive value.'),
       tableOutput('table'),
       textOutput('accuracy'),
       textOutput('posPredictionValue'),
       textOutput('negPredictionValue'),
+      p(),
+      p('A receiver operating characteristic (ROC) graph shows tradeoffs between false positives and false negatives. A point on the diagonal line is the same as guessing. Above the diagonal is better than guessing; below the diagonal is worse.'),
       plotOutput('plot')
     )
   )
